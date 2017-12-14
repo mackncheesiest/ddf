@@ -34,44 +34,43 @@ module.exports = Marionette.LayoutView.extend({
     tagName: CustomElements.register('low-bandwidth-map'),
     template: template,
     regions: {
-        mapContainer: '> .map-container',
-        promptUserContainer: '> .prompt-user-container'
-    },
-    events: {
-        "click > .accept-user-container": "acceptedConditions" 
+        mapContainer: '> .map-container'
     },
 
-    acceptedConditions: function(event) {
-        //In theory update a model which triggers the view to refresh
-        lowBandwidthMapModel.set({userAcknowledged: true});
-        console.log('The user accepted the conditions');
-    },
+    confirmationView3D: ConfirmationView.generateConfirmation({
+        prompt: 'You are in low bandwidth mode. Would you like to display the 3D Map? ',
+        yes: 'Sure',
+        no: 'Nah'
+    }),
+
+    confirmationView2D: ConfirmationView.generateConfirmation({
+        prompt: 'You are in low bandwidth mode. Would you like to display the 2D Map? ',
+        yes: 'Sure',
+        no: 'Nah'
+    }),
 
     initialize: function(options) {
         this.options = options;
+        this.listenTo(this.confirmationView3D, 'change:choice', function(){
+            console.log('For 3D map, the user chose ' + String(this.confirmationView3D.get('choice')));
+            lowBandwidthMapModel.set({'3DMap': this.confirmationView3D.get('choice')});
+        });
+        this.listenTo(this.confirmationView2D, 'change:choice', function(){
+            console.log('For 2D map, the user chose ' + String(this.confirmationView2D.get('choice')));
+            lowBandwidthMapModel.set({'2DMap': this.confirmationView2D.get('choice')});
+        });
     },
 
     onRender: function(){
         console.log('Inside low-bandwidth-map-view, the low bandwidth option is ' + String(this.options.lowBandwidth));
         console.log('Inside low-bandwidth-map-view, the original desired map is ' + String(this.options.desiredContainer));
-        console.log('Inside low-bandwidth-map-view, clickedOk is ' + String(lowBandwidthMapModel.get('userAcknowledged')));
-        if (this.options.lowBandwidth && !lowBandwidthMapModel.get('userAcknowledged')) {
+        console.log('Inside low-bandwidth-map-view, 3D Map choice is ' + String(lowBandwidthMapModel.get('3DMap')));
+        console.log('Inside low-bandwidth-map-view, 2D Map choice is ' + String(lowBandwidthMapModel.get('2DMap')));
+        if (this.options.lowBandwidth && !lowBandwidthMapModel.get('3DMap') && !lowBandwidthMapModel.get('2DMap')) {
             this.mapContainer.show(new InspectorView(this.options));
-            //this.promptUserContainer.show(new ConfirmationView(
-
-            //))
-            this.listenTo(ConfirmationView.generateConfirmation({
-                prompt: 'You are in low bandwidth mode. Would you like to display the 3D Map? ' +
-                'Please use the left navigation to go somewhere else.',
-                yes: 'Okay'
-            }),
-            'change:choice',
-            function(){
-            });
             //this.mapContainer.show(new InspectorView(this.options));
         } else {
             this.mapContainer.show(new CombinedMapView(this.options));
-            this.promptUserContainer.empty();
         }
     }
 });
