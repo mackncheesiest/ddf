@@ -22,10 +22,10 @@ define([
     'underscore',
     'backbone'
 ], function(_, Backbone) {
-    return Backbone.Model.extend({
+    return new (Backbone.Model.extend({
         defaults: {
             isLowBandwidth: false,
             userAcknowledged: false
         }
-    })
+    }))();
 })

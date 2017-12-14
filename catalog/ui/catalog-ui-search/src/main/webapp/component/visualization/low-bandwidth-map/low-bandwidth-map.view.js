@@ -26,8 +26,9 @@ var Common = require('js/Common');
 var store = require('js/store');
 var user = require('component/singletons/user-instance');
 var featureDetection = require('component/singletons/feature-detection');
-var router = require('js/router');
+var router = require('component/router/router');
 var lowBandwidthMapModel = require('component/visualization/low-bandwidth-map/low-bandwidth-map.model');
+var ConfirmationView = require('component/confirmation/confirmation.view');
 
 module.exports = Marionette.LayoutView.extend({
     tagName: CustomElements.register('low-bandwidth-map'),
@@ -42,7 +43,7 @@ module.exports = Marionette.LayoutView.extend({
 
     acceptedConditions: function(event) {
         //In theory update a model which triggers the view to refresh
-        lowBandwidthMapModel.userAcknowledged = true;
+        lowBandwidthMapModel.set({userAcknowledged: true});
         console.log('The user accepted the conditions');
     },
 
@@ -52,10 +53,21 @@ module.exports = Marionette.LayoutView.extend({
 
     onRender: function(){
         console.log('Inside low-bandwidth-map-view, the low bandwidth option is ' + String(this.options.lowBandwidth));
-        console.log('Inside low-bandwidth-map-view, the original desired map is ' + String(this.options.desiredMap));
-        console.log('Inside low-bandwidth-map-view, clickedOk is ' + String(lowBandwidthMapModel.userAcknowledged));
-        if (this.options.lowBandwidth && !lowBandwidthMapModel.userAcknowledged) {
+        console.log('Inside low-bandwidth-map-view, the original desired map is ' + String(this.options.desiredContainer));
+        console.log('Inside low-bandwidth-map-view, clickedOk is ' + String(lowBandwidthMapModel.get('userAcknowledged')));
+        if (this.options.lowBandwidth && !lowBandwidthMapModel.get('userAcknowledged')) {
             this.mapContainer.show(new InspectorView(this.options));
+            //this.promptUserContainer.show(new ConfirmationView(
+
+            //))
+            this.listenTo(ConfirmationView.generateConfirmation({
+                prompt: 'You are in low bandwidth mode. Would you like to display the 3D Map? ' +
+                'Please use the left navigation to go somewhere else.',
+                yes: 'Okay'
+            }),
+            'change:choice',
+            function(){
+            });
             //this.mapContainer.show(new InspectorView(this.options));
         } else {
             this.mapContainer.show(new CombinedMapView(this.options));
