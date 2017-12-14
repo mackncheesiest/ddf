@@ -1,3 +1,4 @@
+{{!--
 /**
  * Copyright (c) Codice Foundation
  *
@@ -9,25 +10,13 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-/*global define, document*/
-define([
-    'jquery',
-    'underscore',
-    'backbone'
-], function ($, _, Backbone) {
-
-    return new (Backbone.Model.extend({
-        defaults: {
-            name: undefined,
-            path: undefined,
-            args: undefined,
-            lowBandwidth: undefined
-        },
-        initialize: function(){
-            this.listenTo(this, 'change:name', this.handleChangeName);
-        },
-        handleChangeName: function(){
-            $('html').attr('data-route', this.get('name'));
-        }
-    }))();
-});
+ --}}
+<div class="prompt-user-container">
+    <h3>
+        Enable Map?
+    </h3>
+    <h3 class="accept-user-container">Eh, sure</h3>
+</div>
+<div class="map-container">
+    
+</div>

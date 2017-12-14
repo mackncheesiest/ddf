@@ -64,7 +64,7 @@ define([
                 //console.log('route to specific workspace:'+workspaceId);
             },
             home: function(){
-               // console.log('route to workspaces home');
+                //console.log('route to workspaces home');
             },
             workspaces: function(){
                 //console.log('route to workspaces home');
@@ -84,7 +84,7 @@ define([
             openSources: function(){
                 //console.log('route to sources');
             },
-            openAbout() {
+            openAbout: function(){
                 //console.log('route to about');
             }
         },
@@ -119,6 +119,12 @@ define([
             hideViews();
             var self = this;
             var queryForMetacards, queryForMetacard;
+            var lowBandwidth = (args.includes('lowBandwidth')) ? true : false;
+            
+            if (lowBandwidth) {
+                console.log('Picked up lowBandwidth arg!');
+            }
+
             switch(name){
                 case 'openWorkspace':
                     var workspaceId = args[0];
@@ -128,7 +134,7 @@ define([
                         }
                         store.setCurrentWorkspaceById(workspaceId);
                         Application.App.workspaceRegion.$el.removeClass('is-hidden');
-                        this.updateRoute(name, path, args);
+                        this.updateRoute(name, path, args, lowBandwidth);
                     } else {
                         toggleNavigator();
                         this.listenTo(ConfirmationView.generateConfirmation({
@@ -170,7 +176,7 @@ define([
                         Application.App.metacardRegion.show(new MetacardView());
                     }
                     Application.App.metacardRegion.$el.removeClass('is-hidden');
-                    self.updateRoute(name, path, args);
+                    self.updateRoute(name, path, args, lowBandwidth);
                     break;
                 case 'openAlert':
                     var alertId = args[0];
@@ -216,7 +222,7 @@ define([
                         if (workspace){
                             store.setCurrentWorkspaceById(workspace.id);
                         }
-                        self.updateRoute(name, path, args);
+                        self.updateRoute(name, path, args, lowBandwidth);
                     }
                     break;
                 case 'openUpload':
@@ -264,7 +270,7 @@ define([
                             Application.App.uploadRegion.show(new UploadView());
                         }
                         Application.App.uploadRegion.$el.removeClass('is-hidden');
-                        self.updateRoute(name, path, args);
+                        self.updateRoute(name, path, args, lowBandwidth);
                     }
                     break;
                 case 'openIngest':
@@ -272,44 +278,48 @@ define([
                         Application.App.ingestRegion.show(new IngestView());
                     }
                     Application.App.ingestRegion.$el.removeClass('is-hidden');
-                    this.updateRoute(name, path, args);
+                    this.updateRoute(name, path, args, lowBandwidth);
                     break;
                 case 'home':
                     if (Application.App.workspacesRegion.currentView===undefined) {
                         Application.App.workspacesRegion.show(new HomeView());
                     }
                     Application.App.workspacesRegion.$el.removeClass('is-hidden');
-                    this.updateRoute(name, path, args);
+                    this.updateRoute(name, path, args, lowBandwidth);
                     break;
                 case 'workspaces':
                     if (Application.App.workspacesRegion.currentView===undefined) {
                         Application.App.workspacesRegion.show(new HomeView());
                     }
                     Application.App.workspacesRegion.$el.removeClass('is-hidden');
-                    this.updateRoute(name, path, args);
+                    this.updateRoute(name, path, args, lowBandwidth);
                     break;
                 case 'openSources':
                     if (Application.App.sourcesRegion.currentView === undefined) {
                         Application.App.sourcesRegion.show(new SourcesView());
                     }
                     Application.App.sourcesRegion.$el.removeClass('is-hidden');
-                    this.updateRoute(name, path, args);
+                    this.updateRoute(name, path, args, lowBandwidth);
                     break;
                 case 'openAbout':
                     if (Application.App.aboutRegion.currentView === undefined) {
                         Application.App.aboutRegion.show(new AboutView());
                     }
                     Application.App.aboutRegion.$el.removeClass('is-hidden');
-                    this.updateRoute(name, path, args);
+                    this.updateRoute(name, path, args, lowBandwidth);
                     break;
             }
         },
-        updateRoute: function(name, path, args){
+        updateRoute: function(name, path, args, lowBandwidth){
+            console.log('inside js/router, low bandwidth arg set to ' + String(lowBandwidth));
+            router.lowBandwidth = lowBandwidth;
             router.set({
                 name: name,
                 path: path,
                 args: args
             });
+            console.log('inside js/router, router low bandwidth set to ' + String(router.lowBandwidth));
+            console.log('inside js/router, router name set to ' + String(router.name));
             $(window).trigger('resize');
             wreqr.vent.trigger('resize');
         }
