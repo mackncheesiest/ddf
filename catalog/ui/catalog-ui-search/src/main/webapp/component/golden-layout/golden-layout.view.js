@@ -105,8 +105,6 @@ function registerComponent(marionetteView, name, ComponentView) {
     var options = marionetteView.options;
     console.log('inside registerComponent, router.lowBandwidth: ' + String(router.get('lowBandwidth') + ', name: ' + name));
     options = _.extend({}, options, {lowBandwidth: router.get('lowBandwidth'), desiredContainer: name});
-    // options.lowBandwidth = router.lowBandwidth;
-    // options.desiredContainer = name;
     marionetteView.goldenLayout.registerComponent(name, function (container, componentState) {
         container.on('open', () => {
             setTimeout(function () {

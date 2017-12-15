@@ -50,7 +50,9 @@ module.exports = Marionette.LayoutView.extend({
     //     no: 'Nah'
     // }),
 
-    confirmationView: ConfirmationViewLowBand.generateConfirmation({}),
+    confirmationView: function() { 
+        return ConfirmationViewLowBand.generateConfirmation({}) 
+    },
 
     initialize: function(options) {
         this.options = options;
@@ -62,22 +64,34 @@ module.exports = Marionette.LayoutView.extend({
         //     console.log('For 2D map, the user chose ' + String(this.confirmationView2D.get('choice')));
         //     lowBandwidthMapModel.set({'2DMap': this.confirmationView2D.get('choice')});
         // });
-        this.listenTo(this.confirmationView, 'change:choice', function() {
-            switch(this.confirmationView.get('choice')) {
-                case 'neither':
-                    console.log('The user chose neither');
-                    this.mapContainer.show(new InspectorView(this.options));
-                    break;
-                case '2D':
-                    console.log('The user chose 2D');
-                    this.mapContainer.show(new OpenlayersView(this.options));
-                    break;
-                case '3D':
-                    console.log('The user chose 3D');
+        console.log('Inside low-bandwidth-map view: lowBandwidth = ' + String(this.options.lowBandwidth) + ', desiredContainer = ' + String(this.options.desiredContainer));
+        if (this.options.lowBandwidth) {
+            this.listenTo(this.confirmationView(), 'change:choice', function() {
+                switch(this.confirmationView.get('choice')) {
+                    case 'neither':
+                        console.log('The user chose neither');
+                        this.mapContainer.show(new InspectorView(this.options));
+                        break;
+                    case '2D':
+                        console.log('The user chose 2D');
+                        this.mapContainer.show(new OpenlayersView(this.options));
+                        break;
+                    case '3D':
+                        console.log('The user chose 3D');
+                        this.mapContainer.show(new CombinedMapView(this.options));
+                        break;
+                }
+            });
+        } else {
+            switch(this.options.desiredContainer) {
+                case 'cesium':
                     this.mapContainer.show(new CombinedMapView(this.options));
                     break;
+                case 'openlayers':
+                    this.mapContainer.show(new OpenlayersView(this.options));
+                    break;
             }
-        });
+        }
     },
 
     onRender: function(){
