@@ -21,7 +21,7 @@ define([
             name: undefined,
             path: undefined,
             args: undefined,
-            lowBandwidth: undefined
+            lowBandwidth: false
         },
         initialize: function(){
             this.listenTo(this, 'change:name', this.handleChangeName);

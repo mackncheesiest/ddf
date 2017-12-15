@@ -119,7 +119,7 @@ define([
             hideViews();
             var self = this;
             var queryForMetacards, queryForMetacard;
-            var lowBandwidth = (args.includes('lowBandwidth')) ? true : false;
+            var lowBandwidth = (args.includes('lowBandwidth') || router.get('lowBandwidth')) ? true : false;
             
             if (lowBandwidth) {
                 console.log('Picked up lowBandwidth arg!');
