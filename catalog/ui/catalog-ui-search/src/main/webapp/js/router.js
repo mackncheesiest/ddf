@@ -120,11 +120,18 @@ define([
             var self = this;
             var queryForMetacards, queryForMetacard;
             var lowBandwidth = (args.includes('lowBandwidth') || router.get('lowBandwidth')) ? true : false;
-            
-            if (lowBandwidth) {
-                console.log('Picked up lowBandwidth arg!');
+        
+            if (args.includes('lowBandwidth')) {
+                console.log('Setting lowBandwidth to true because I saw the arg');
             }
-            this.updateLowBandwidth(lowBandwidth);
+            if (router.get('lowBandwidth')) {
+                console.log('Setting lowBandwidth to true because I remember seeing it earlier');
+            }
+            if (lowBandwidth) {
+                router.set({
+                    lowBandwidth: true
+                });
+            }
 
             switch(name){
                 case 'openWorkspace':
@@ -317,15 +324,8 @@ define([
                 path: path,
                 args: args
             });
-            console.log('inside js/router, router low bandwidth set to ' + String(router.get('lowBandwidth')));
-            console.log('inside js/router, router name set to ' + String(router.get('name')));
             $(window).trigger('resize');
             wreqr.vent.trigger('resize');
-        },
-        updateLowBandwidth: function(lowBandwidth) {
-            router.set({
-                lowBandwidth: lowBandwidth
-            });
         }
     });
 
